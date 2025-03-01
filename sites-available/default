@@ -1,0 +1,27 @@
+server {
+    # IPv4アドレスで80番ポートをリッスン
+    listen 80;
+
+    # IPv6アドレスで80番ポートをリッスン
+    listen [::]:80;
+
+    # ディレクトリにアクセスされた際に表示するインデックスファイルを指定
+    index index.html index.htm index.nginx-debian.html;
+
+    # root
+    root /usr/share/nginx/html;
+
+    # アクセスを許可するIPアドレスを指定
+    server_name 192.168.1.7 192.168.1.12;
+
+    # URIに基づいてリクエストを処理
+    # below step2
+    # location / {
+    #         proxy_pass http://localhost:3030;
+    #         proxy_http_version 1.1;
+    #         proxy_set_header Upgrade $http_upgrade;
+    #         proxy_set_header Connection 'upgrade';
+    #         proxy_set_header Host $host;
+    #         proxy_cache_bypass $http_upgrade;
+    # }
+}

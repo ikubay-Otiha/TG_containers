@@ -1,0 +1,10 @@
+# Docker関連
+*.log
+!Dockerfile
+!nginx.conf
+!sites-available/default
+.DS_Store
+
+# その他
+*.swp
+*.bak
