@@ -11,12 +11,20 @@ server {
     # root
     root /usr/share/nginx/html;
 
-    # アクセスを許可するIPアドレスを指定
-    server_name 192.168.1.7;
-
     # URIに基づいてリクエストを処理
     location /cpp/ {
-        allow 192.168.1.7;
+        allow 192.168.96.0/24;  # Dockerネットワーク全体を許可
+        allow 127.0.0.1;        # ローカルホスト
+        allow 192.168.1.0/24;   # 自宅Wi-Fiネットワーク
+        deny all;
+
+        # リファラーによる制限(/tg/のみ許可)
+        valid_referers server_names
+                        ~/tg/;
+        if ($invalid_referer) {
+            return 403;
+        }
+
         proxy_pass http://192.168.1.12:3030/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -24,9 +32,27 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    location /py/ {
-        allow 192.168.1.7;
-        proxy_pass http://192.168.1.12:3000/;
+    location /monitor/ {
+        allow 192.168.96.0/24;  # Dockerコンテナネットワーク
+        allow 127.0.0.1;        # ローカルホスト
+        allow 192.168.1.0/24;   # 自宅Wi-Fiネットワーク
+        deny all;
+
+        proxy_pass http://py_monitor:3000/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /tg/ {
+        allow 192.168.96.0/24;  # Dockerコンテナネットワーク
+        allow 127.0.0.1;        # ローカルホスト
+        allow 192.168.1.0/24;   # 自宅Wi-Fiネットワーク
+
+        deny all;
+
+        proxy_pass http://py_TG_fe:3020/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
